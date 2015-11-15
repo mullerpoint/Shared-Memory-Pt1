@@ -78,7 +78,7 @@ main()
 
 
 	//OUTPUT: confirm parent created memory segment successfully 
-	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #) of %l (This shared memory doesn't get a true segment number until this process adds it to its segment table by attaching to it.)\n\n",shMemSegID);
+	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #) of %lu (This shared memory doesn't get a true segment number until this process adds it to its segment table by attaching to it.)\n\n", shMemSegID);
 
 
 	//set the shared memory segment int to 
@@ -99,7 +99,7 @@ main()
 
 	if (childPID == 0)
 	{
-		printf("\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
+		printf("\tChild: My pid is %lu; my parent's pid is %lu; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
 		//print the statement that it is a child and the PID
 
 		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
@@ -110,10 +110,10 @@ main()
 	}
 	else if (childPID != 0)
 	{
-		printf("Parent: My pid is %ul, spawned a child with pid of %UL; please enter an integer to be stored in shared memory: ", getpid(), childPID);
+		printf("Parent: My pid is %lu, spawned a child with pid of %lu; please enter an integer to be stored in shared memory: ", getpid(), childPID);
 		while (*shMemSeg == 0)
 		{
-			scanf("%d", *shMemSeg);
+			scanf("%d", (*shMemSeg));
 		}
 		
 		while (shMemSeg != 0);

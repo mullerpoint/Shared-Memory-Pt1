@@ -103,10 +103,10 @@ main()
 		{
 			scanf("%d", shMemSeg);
 		}
-
+		printf("spinning, parent");//debug
 		//spin while waiting for zero
 		while (shMemSeg != 0);
-
+		printf("done spinning, parent");//debug
 		//print that zero has been set
 		printf("Parent: the child has re-zeroed our shared integer\n");
 
@@ -132,7 +132,7 @@ main()
 			perror("shmctl");	//if an error print error
 			_exit(-1);			//and exit the program
 		}//if
-		
+
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul\n\n", shMemSegID);
 	}
 	else if (childPID == 0)
@@ -144,8 +144,9 @@ main()
 
 		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
 
-		(*shMemSeg) = (int)0;
-printf("Child process terminating\n");
+		(*shMemSeg) = 0;
+		printf("%d, Child", *shMemSeg);//debug
+		printf("Child process terminating\n");
 
 	}
 

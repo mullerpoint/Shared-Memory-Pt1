@@ -59,7 +59,7 @@ main()
 			//creation flags - 0666 rw-rw-rw permissions, IPC_CREAT if the segment already exists just connect
 		{
 			perror("shmget");	//if an error print error
-			exit(-1);			//and exit the program
+			_exit(-1);			//and exit the program
 		}
 
 
@@ -72,7 +72,7 @@ main()
 			//creation flags
 		{
 			perror("shmat");	//if an error print error
-			exit(-1);			//and exit the program
+			_exit(-1);			//and exit the program
 		}
 
 
@@ -95,7 +95,7 @@ main()
 	if ((childPID = fork()) < 0 ) 
 	{
 		perror("fork");		//if an error print error
-		exit(-1);			//and exit the program
+		_exit(-1);			//and exit the program
 	}
 
 
@@ -133,7 +133,7 @@ main()
 		//shared memory address void pointer
 	{
 		perror("shmdt");	//if an error print error
-		exit(-1);			//and exit the program
+		_exit(-1);			//and exit the program
 	}
 
 
@@ -160,7 +160,7 @@ main()
 			//
 		{
 			perror("shmctl");	//if an error print error
-			exit(-1);			//and exit the program
+			_exit(-1);			//and exit the program
 		}//if
 
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul", shMemSegID);

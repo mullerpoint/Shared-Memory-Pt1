@@ -63,7 +63,7 @@ main()
 
 
 	//attach the shared memory segment
-	if ((shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)-1)
+	if ((char*)(shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)-1)
 		//if the attach memory segment returns a value that equals -1 run error commands
 		//command contents
 		//shared memory segment ID
@@ -96,7 +96,20 @@ main()
 
 
 
-	if (childPID != 0)
+	if (childPID == 0)
+	{
+		printf("\n\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
+		//print the statement that it is a child and the PID
+
+		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
+
+		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
+
+		(*shMemSeg) = 0;
+		printf("%d, Child", *shMemSeg);//debug
+		printf("Child process terminating\n");
+	}
+	else //if (childPID == 0)
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %ul; please enter an integer to be stored in shared memory: ", getpid(), childPID);
 		printf("scanf(), parent");//debug
@@ -133,19 +146,6 @@ main()
 		}//if
 
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul\n\n", shMemSegID);
-	}
-	else if (childPID == 0)
-	{
-		printf("\n\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
-		//print the statement that it is a child and the PID
-
-		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
-
-		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
-
-		(*shMemSeg) = 0;
-		printf("%d, Child", *shMemSeg);//debug
-		printf("Child process terminating\n");
 
 	}
 

@@ -78,9 +78,9 @@ main()
 
 
 	//OUTPUT: confirm parent created memory segment successfully 
-	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #)\
-		   		    of %l (This shared memory doesn't get a true segment number until this process adds it to \
-								its segment table by attaching to it.)\n\n", shMemSegID);
+	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #)", 
+		"of %l (This shared memory doesn't get a true segment number until this process adds it to its",shMemSegID,
+		"segment table by attaching to it.)\n\n");
 
 
 
@@ -107,13 +107,13 @@ main()
 
 		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
 
-		printf("Child: The value in the shared integer is now %d", *shMemSeg);
+		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
 
 		(*shMemSeg) = (int)0;
 	}
 	else if (childPID != 0)
 	{
-		printf("Parent: My pid is %ul, spawned a child with pid of %UL; please enter an integer to be stored in shared memory: ");
+		printf("Parent: My pid is %ul, spawned a child with pid of %UL; please enter an integer to be stored in shared memory: ", getpid(), childPID);
 		while (*shMemSeg == 0)
 		{
 			scanf("%d", *shMemSeg);
@@ -141,7 +141,7 @@ main()
 
 	if (childPID == 0)
 	{
-		printf("Child process terminating");
+		printf("Child process terminating\n");
 	}
 	else if (childPID != 0)
 	{
@@ -163,7 +163,7 @@ main()
 			_exit(-1);			//and exit the program
 		}//if
 
-		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul", shMemSegID);
+		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul\n\n", shMemSegID);
 	}//elseif
 
 } //end of main()

@@ -146,6 +146,7 @@ main()
 	else if (childPID != 0)
 	{
 		//have parent wait for child to terminate
+		int rtrn;
 
 		waitid(childPID, WEXITED);
 		

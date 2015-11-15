@@ -21,7 +21,7 @@
 #include <fcntl.h> //file control options
 #include <sys/ipc.h> //enables InterProcess Communication
 #include <sys/shm.h> //shared memory calls
-#include <sys/wait.h> //waitid() wait for child to terminate
+#include <sys/wait.h> //WIFEXITED(Status) wait for child to terminate
 
 //
 
@@ -59,7 +59,7 @@ main()
 			//creation flags - 0666 rw-rw-rw permissions, IPC_CREAT if the segment already exists just connect
 		{
 			perror("shmget");	//if an error print error
-			exit(EXIT_SUCCESS);	//and exit the program
+			exit(-1);			//and exit the program
 		}
 
 
@@ -72,7 +72,7 @@ main()
 			//creation flags
 		{
 			perror("shmat");	//if an error print error
-			exit(EXIT_SUCCESS);	//and exit the program
+			exit(-1);			//and exit the program
 		}
 
 
@@ -95,7 +95,7 @@ main()
 	if ((childPID = fork()) < 0 ) 
 	{
 		perror("fork");		//if an error print error
-		exit(EXIT_SUCCESS);	//and exit the program
+		exit(-1);			//and exit the program
 	}
 
 
@@ -127,13 +127,13 @@ main()
 
 
 	//Detach the Memory segment
-	if (shmdt(shMemSeg) == -1))
+	if (shmdt(shMemSeg) == -1)
 		//if the attach memory segment returns a value that equals -1 run error commands
 		//command contents
 		//shared memory address void pointer
 	{
 		perror("shmdt");	//if an error print error
-		exit(EXIT_SUCCESS);	//and exit the program
+		exit(-1);			//and exit the program
 	}
 
 
@@ -160,7 +160,7 @@ main()
 			//
 		{
 			perror("shmctl");	//if an error print error
-			exit(EXIT_SUCCESS);	//and exit the program
+			exit(-1);			//and exit the program
 		}//if
 
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul", shMemSegID);

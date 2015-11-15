@@ -59,12 +59,12 @@ main()
 			//creation flags - 0666 rw-rw-rw permissions, IPC_CREAT if the segment already exists just connect
 		{
 			perror("shmget");	//if an error print error
-			exit(1);			//and exit the program
+			exit();				//and exit the program
 		}
 
 
 		//attach the shared memory segment
-		if ((shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)(-1)) 
+		if ((char *)(shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)(-1)) 
 			//if the attach memory segment returns a value that equals -1 run error commands
 			//command contents
 			//shared memory segment ID
@@ -72,7 +72,7 @@ main()
 			//creation flags
 		{
 			perror("shmat");	//if an error print error
-			exit(1);			//and exit the program
+			exit();				//and exit the program
 		}
 
 
@@ -95,7 +95,7 @@ main()
 	if ((childPID = fork()) < 0 ) 
 	{
 		perror("fork");		//if an error print error
-		exit(1);			//and exit the program
+		exit();				//and exit the program
 	}
 
 
@@ -109,7 +109,7 @@ main()
 
 		printf("Child: The value in the shared integer is now %d", *shMemSeg);
 
-		(int)*shMemSeg = (int)0;
+		(int)(*shMemSeg) = (int)0;
 	}
 	else if (childPID != 0)
 	{
@@ -127,13 +127,13 @@ main()
 
 
 	//Detach the Memory segment
-	if ((shMemSeg = shmdt(shMemSeg)) == (char *)(-1))
+	if ((char *)(shMemSegID = shmdt(shMemSeg)) == (char *)(-1))
 		//if the attach memory segment returns a value that equals -1 run error commands
 		//command contents
 		//shared memory address void pointer
 	{
 		perror("shmdt");	//if an error print error
-		exit(1);			//an exit the program
+		exit();				//and exit the program
 	}
 
 
@@ -147,8 +147,9 @@ main()
 	{
 		//have parent wait for child to terminate
 		int rtrn;
+		int status;
 
-		waitid(childPID, WEXITED);
+		while (!(WIFEXITED(status)));
 		
 		
 		if ((rtrn = shmctl(shMemSegID, IPC_RMID, 0)) == -1)
@@ -158,8 +159,8 @@ main()
 			//control command
 			//
 		{
-			perror("shmctl");
-			exit(1);
+			perror("shmctl");	//if an error print error
+			exit();				//and exit the program
 		}//if
 
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul", shMemSegID);

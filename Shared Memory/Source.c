@@ -99,10 +99,8 @@ main()
 	if (childPID != 0)
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %ul; please enter an integer to be stored in shared memory: ", getpid(), childPID);
-		while (*shMemSeg == 0)
-		{
-			scanf("%d", shMemSeg);
-		}
+		scanf("%d", shMemSeg);
+
 		printf("spinning, parent");//debug
 		//spin while waiting for zero
 		while (shMemSeg != 0);

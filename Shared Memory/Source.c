@@ -78,10 +78,7 @@ main()
 
 
 	//OUTPUT: confirm parent created memory segment successfully 
-	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #)", 
-		"of %l (This shared memory doesn't get a true segment number until this process adds it to its",shMemSegID,
-		"segment table by attaching to it.)\n\n");
-
+	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #) of %l (This shared memory doesn't get a true segment number until this process adds it to its segment table by attaching to it.)\n\n",shMemSegID);
 
 
 	//set the shared memory segment int to 

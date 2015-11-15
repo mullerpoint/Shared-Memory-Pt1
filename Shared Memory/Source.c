@@ -106,7 +106,7 @@ main()
 		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
 
 		(*shMemSeg) = 0;
-		printf("Child process terminating\n");
+		printf("Child process terminating\n\n");
 	}
 	else //if (childPID == 0)
 	{
@@ -117,7 +117,7 @@ main()
 		while (*shMemSeg != 0);
 
 		//print that zero has been set
-		printf("Parent: the child has re-zeroed our shared integer\n");
+		printf("Parent: the child has re-zeroed our shared integer\n\n");
 
 		//Detach the Memory segment
 		if (shmdt(shMemSeg) == -1)

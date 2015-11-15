@@ -112,12 +112,12 @@ main()
 	else //if (childPID == 0)
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %ul; please enter an integer to be stored in shared memory: ", getpid(), childPID);
-		printf("scanf(), parent");//debug
-		scanf("%d", &shMemSeg);
+		//printf("scanf(), parent");//debug
+		scanf("%d", shMemSeg);
 
 		printf("spinning, parent");//debug
 		//spin while waiting for zero
-		while (shMemSeg != 0);
+		while (*shMemSeg != 0);
 		printf("done spinning, parent");//debug
 		//print that zero has been set
 		printf("Parent: the child has re-zeroed our shared integer\n");

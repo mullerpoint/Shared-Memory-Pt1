@@ -59,7 +59,7 @@ main()
 			//creation flags - 0666 rw-rw-rw permissions, IPC_CREAT if the segment already exists just connect
 		{
 			perror("shmget");	//if an error print error
-			_exit();			//and exit the program
+			exit(EXIT_SUCCESS);	//and exit the program
 		}
 
 
@@ -72,7 +72,7 @@ main()
 			//creation flags
 		{
 			perror("shmat");	//if an error print error
-			_exit();			//and exit the program
+			exit(EXIT_SUCCESS);	//and exit the program
 		}
 
 
@@ -95,7 +95,7 @@ main()
 	if ((childPID = fork()) < 0 ) 
 	{
 		perror("fork");		//if an error print error
-		_exit();			//and exit the program
+		exit(EXIT_SUCCESS);	//and exit the program
 	}
 
 
@@ -109,14 +109,14 @@ main()
 
 		printf("Child: The value in the shared integer is now %d", *shMemSeg);
 
-		(int)(*shMemSeg) = (int)0;
+		(*shMemSeg) = (int)0;
 	}
 	else if (childPID != 0)
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %UL; please enter an integer to be stored in shared memory: ");
-		while (shMemSeg == 0)
+		while (*shMemSeg == 0)
 		{
-			scanf("%d", shMemSeg);
+			scanf("%d", *shMemSeg);
 		}
 		
 		while (shMemSeg != 0);
@@ -127,13 +127,13 @@ main()
 
 
 	//Detach the Memory segment
-	if ((char *)(shMemSegID = shmdt(shMemSeg)) == (char *)(-1))
+	if (shmdt(shMemSeg) == -1))
 		//if the attach memory segment returns a value that equals -1 run error commands
 		//command contents
 		//shared memory address void pointer
 	{
 		perror("shmdt");	//if an error print error
-		_exit();			//and exit the program
+		exit(EXIT_SUCCESS);	//and exit the program
 	}
 
 
@@ -160,7 +160,7 @@ main()
 			//
 		{
 			perror("shmctl");	//if an error print error
-			_exit();			//and exit the program
+			exit(EXIT_SUCCESS);	//and exit the program
 		}//if
 
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul", shMemSegID);

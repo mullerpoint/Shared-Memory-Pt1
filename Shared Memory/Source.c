@@ -27,7 +27,6 @@
 
 //Global Variables and Defines
 #define SHM_SIZE sizeof(int)
-#define SHM_KEY 1234
 //
 
 //Function Prototypes
@@ -43,53 +42,53 @@ main()
 {
 	//Define Variables
 	//shared memory
-		int shMemSegID;
-		int * shMemSeg;
+	int shMemSegID;
+	int *shMemSeg;
 	//Spawning process
-		pid_t childPID = 0;
-	
+	pid_t childPID = 0;
+
 
 	//Create and attach a shared memory segment
-		//create shared memory segment
-		if ((shMemSegID = shmget(SHM_KEY, SHM_SIZE, 0666 | IPC_CREAT)) < 0) 
-			//if the returned memory segment id is less than zero(0) (ie -1) run the error commands
-			//command contents
-			//shared memory segment key id
-			//shared memory segment size
-			//creation flags - 0666 rw-rw-rw permissions, IPC_CREAT if the segment already exists just connect
-		{
-			perror("shmget");	//if an error print error
-			_exit(-1);			//and exit the program
-		}
+	//create shared memory segment
+	if ((shMemSegID = shmget(IPC_PRIVATE, SHM_SIZE, IPC_CREAT | IPC_EXCL | 0666)) < 0)
+		//if the returned memory segment id is less than zero(0) (ie -1) run the error commands
+		//command contents
+		//shared memory segment key id needs to be unique
+		//shared memory segment size
+		//creation flags -  IPC_CREAT if the segment already exists connect else create, if it exists fail, 0666 rw-rw-rw permissions
+	{
+		perror("shmget");	//if an error print error
+		_exit(-1);			//and exit the program
+	}
 
 
-		//attach the shared memory segment
-		if ((char *)(shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)(-1)) 
-			//if the attach memory segment returns a value that equals -1 run error commands
-			//command contents
-			//shared memory segment ID
-			//shared memory address void pointer
-			//creation flags
-		{
-			perror("shmat");	//if an error print error
-			_exit(-1);			//and exit the program
-		}
+	//attach the shared memory segment
+	if ((shMemSeg = shmat(shMemSegID, NULL, 0)) == (char *)-1)
+		//if the attach memory segment returns a value that equals -1 run error commands
+		//command contents
+		//shared memory segment ID
+		//address wher attached shared memory address void pointer
+		//creation flags
+	{
+		perror("shmat");	//if an error print error
+		_exit(-1);			//and exit the program
+	}
 
 
 
 	//OUTPUT: confirm parent created memory segment successfully 
-	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #) of %d (This shared memory doesn't get a true segment number until this process adds it to its segment table by attaching to it.)\n\n", shMemSegID);
+	printf("Parent: Successfully created shared memory segment with shared memory ID # (not segment #) of %d\n\n", shMemSegID);
 
 
-	//set the shared memory segment int to 
-	*shMemSeg = (int)0;
+	//set the shared memory segment to zero(0)
+	*shMemSeg = 0;
 
 	//OUTPUT: notify of child spawn, and successful variable set
 	printf("Parent: Now spawning a child after setting the shared integer to 0\n");
 
 
 	//spawn child process with fork
-	if ((childPID = fork()) < 0 ) 
+	if ((childPID = fork()) < 0)
 	{
 		perror("fork");		//if an error print error
 		_exit(-1);			//and exit the program
@@ -97,58 +96,32 @@ main()
 
 
 
-	if (childPID == 0)
-	{
-		printf("\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
-		//print the statement that it is a child and the PID
-
-		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
-
-		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
-
-		(*shMemSeg) = (int)0;
-	}
-	else if (childPID != 0)
+	if (childPID != 0)
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %ul; please enter an integer to be stored in shared memory: ", getpid(), childPID);
 		while (*shMemSeg == 0)
 		{
 			scanf("%d", shMemSeg);
 		}
-		
+
+		//spin while waiting for zero
 		while (shMemSeg != 0);
 
+		//print that zero has been set
+		printf("Parent: the child has re-zeroed our shared integer\n");
 
-	}
+		//Detach the Memory segment
+		if (shmdt(shMemSeg) == -1)
+			//if the attach memory segment returns a value that equals -1 run error commands
+			//command contents
+			//shared memory address void pointer
+		{
+			perror("shmdt");	//if an error print error
+			_exit(-1);			//and exit the program
+		}
 
-
-
-	//Detach the Memory segment
-	if (shmdt(shMemSeg) == -1)
-		//if the attach memory segment returns a value that equals -1 run error commands
-		//command contents
-		//shared memory address void pointer
-	{
-		perror("shmdt");	//if an error print error
-		_exit(-1);			//and exit the program
-	}
-
-
-
-
-	if (childPID == 0)
-	{
-		printf("Child process terminating\n");
-	}
-	else if (childPID != 0)
-	{
-		//have parent wait for child to terminate
 		int rtrn;
-		int status;
 
-		while (!(WIFEXITED(status)));
-		
-		
 		if ((rtrn = shmctl(shMemSegID, IPC_RMID, 0)) == -1)
 			//shared memory control
 			//command contents
@@ -159,8 +132,21 @@ main()
 			perror("shmctl");	//if an error print error
 			_exit(-1);			//and exit the program
 		}//if
-
+		
 		printf("Parent: Child terminated; parent successfully removed segment whose ID # was %ul\n\n", shMemSegID);
-	}//elseif
+	}
+	else if (childPID == 0)
+	{
+		printf("\n\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
+		//print the statement that it is a child and the PID
+
+		while (*shMemSeg == 0); //spin while waiting for the shared memory to change from 0
+
+		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
+
+		(*shMemSeg) = (int)0;
+printf("Child process terminating\n");
+
+	}
 
 } //end of main()

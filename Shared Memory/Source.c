@@ -29,9 +29,6 @@
 #define SHM_SIZE sizeof(int)
 //
 
-//Function Prototypes
-
-//
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -55,7 +52,7 @@ main()
 		//command contents
 		//shared memory segment key id needs to be unique
 		//shared memory segment size
-		//creation flags -  IPC_CREAT if the segment already exists connect else create, if it exists fail, 0666 rw-rw-rw permissions
+		//creation flags -  IPC_CREAT if the segment already exists connect else create, IPC_EXCL if it exists fail, 0666 rw-rw-rw- permissions
 	{
 		perror("shmget");	//if an error print error
 		_exit(-1);			//and exit the program
@@ -67,7 +64,7 @@ main()
 		//if the attach memory segment returns a value that equals -1 run error commands
 		//command contents
 		//shared memory segment ID
-		//address wher attached shared memory address void pointer
+		//address where attached shared memory address void pointer
 		//creation flags
 	{
 		perror("shmat");	//if an error print error
@@ -96,7 +93,7 @@ main()
 
 
 
-	if (childPID == 0)
+	if (childPID == 0) //if child process
 	{
 		printf("\n\tChild: My pid is %ul; my parent's pid is %ul; the shared integer value is currently 0; I'll spin until it's not 0\n\n", getpid(), getppid());
 		//print the statement that it is a child and the PID
@@ -105,13 +102,13 @@ main()
 
 		printf("Child: The value in the shared integer is now %d\n", *shMemSeg);
 
-		(*shMemSeg) = 0;
+		(*shMemSeg) = 0; //critical section
 		printf("Child process terminating\n\n");
 	}
-	else //if (childPID == 0)
+	else //if (childPID == 0) if parent process
 	{
 		printf("Parent: My pid is %ul, spawned a child with pid of %ul; please enter an integer to be stored in shared memory: ", getpid(), childPID);
-		scanf("%d", shMemSeg);
+		scanf("%d", shMemSeg); //critical section
 
 		//spin while waiting for zero
 		while (*shMemSeg != 0);
